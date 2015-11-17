@@ -368,7 +368,8 @@ td.info2 {
 
 /* @header ---------- */
 #header {
-	background: #282b2e;
+	// background: #282b2e;
+	background: #8c141e;
 	margin: 0px;
 }
 .header-install {
@@ -627,7 +628,8 @@ table#subnetsMenu td#subnetsLeft .menu-tools {
 	color: white;
 }
 #menu-navbar ul li.dropdown.open.administration a {
-	background: #d9534f;
+	// background: #d9534f;
+	background: #28c3f0;
 	color: white;
 }
 #menu-navbar ul li.dropdown.open li a,
@@ -664,8 +666,10 @@ table#subnetsMenu td#subnetsLeft .menu-tools {
 /* admin color */
 .navbar#menu-navbar li a.btn-danger,
 .navbar#menu-navbar li ul.admin li:hover {
-	background: #d9534f;
-	border-color: #d43f3a;
+	// background: #d9534f;
+	// border-color: #d43f3a;
+	background: #28c3f0;
+	border-color: #28c3f0;
 }
 .navbar#menu-navbar li a.btn-success {
 	border-color: #d43f3a;
