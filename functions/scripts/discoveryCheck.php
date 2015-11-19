@@ -45,7 +45,7 @@ $Scan->reset_debugging(false);
 // set ping statuses
 $statuses = explode(";", $Scan->settings->pingStatus);
 // set mail override flag
-$send_mail = true;
+$send_mail = false;
 
 // set now for whole script
 $now     = time();

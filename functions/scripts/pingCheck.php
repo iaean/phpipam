@@ -53,7 +53,7 @@ $agent = $Tools->fetch_object("scanAgents", "id", 1);
 // set ping statuses
 $statuses = explode(";", $Scan->settings->pingStatus);
 // set mail override flag
-$send_mail = true;
+$send_mail = false;
 
 // response for mailing
 $address_change = array();			// Array with differences, can be used to email to admins
