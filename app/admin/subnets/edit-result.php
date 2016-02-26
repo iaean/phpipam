@@ -20,6 +20,9 @@ $Result 	= new Result ();
 # verify that user is logged in
 $User->check_user_session();
 
+# validate csrf cookie
+$_POST['csrf_cookie']==$_SESSION['csrf_cookie'] ? :               $Result->show("danger", _("Invalid CSRF cookie"), true);
+
 
 # ID must be numeric
 if($_POST['action']=="add") {
@@ -83,9 +86,25 @@ if ( ($_POST['sectionId'] != @$_POST['sectionIdNew']) && $_POST['action']=="edit
 	$_POST['masterSubnetId'] = 0;
 
     //check for overlapping
-    if($section['strictMode']==1 && !$parent_is_folder) {
+    $sectionIdNew = (array) $Sections->fetch_section(null, $_POST['sectionIdNew']);
+    if($sectionIdNew['strictMode']==1 && !$parent_is_folder) {
     	/* verify that no overlapping occurs if we are adding root subnet */
     	$overlap=$Subnets->verify_subnet_overlapping ($_POST['sectionIdNew'], $_POST['cidr'], $_POST['vrfId']);
+    	if($overlap!==false) {
+	    	$errors[] = $overlap;
+	    }
+    }
+}
+/**
+ *	If VRF changes then do checks!
+ */
+if ( ($_POST['vrfId'] != @$_POST['vrfIdOld']) && $_POST['action']=="edit" ) {
+	
+	if($section['strictMode']==1 && !$parent_is_folder) {
+    	/* verify that no overlapping occurs if we are adding root subnet
+	       only check for overlapping if vrf is empty or not exists!
+    	*/
+    	$overlap=$Subnets->verify_subnet_overlapping ($_POST['sectionId'], $_POST['cidr'], $_POST['vrfId']);
     	if($overlap!==false) {
 	    	$errors[] = $overlap;
 	    }
@@ -257,7 +276,8 @@ else {
 					"DNSrecursive"=>$Admin->verify_checkbox(@$_POST['DNSrecursive']),
 					"DNSrecords"=>$Admin->verify_checkbox(@$_POST['DNSrecords']),
 					"nameserverId"=>$_POST['nameserverId'],
-					"device"=>$_POST['device']
+					"device"=>$_POST['device'],
+                    "isFull"=>$Admin->verify_checkbox($_POST['isFull'])
 					);
 	# for new subnets we add permissions
 	if($_POST['action']=="add") {
@@ -369,6 +389,9 @@ else {
 		// POST DNSrecursive not set, fake it if old is also 0
 		if (!isset($_POST['DNSrecursive']) && @$subnet_old_details['DNSrecursive']==0) { $_POST['DNSrecursive'] = 0; }
 
+		// recreate csrf cookie
+		$csrf = $User->create_csrf_cookie ();
+
 		//delete
 		if ($_POST['action']=="delete") {
 			// if zone exists
@@ -383,7 +406,7 @@ else {
 
 				print _('Do you wish to delete DNS zone and all records')."?<br>";
 				print "	&nbsp;&nbsp; DNS zone <strong>$domain->name</strong></li>";
-				print " <form name='domainEdit' id='domainEdit'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='$domain->id'></form>";
+				print " <form name='domainEdit' id='domainEdit'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='$domain->id'><input type='hidden' name='csrf_cookie' value='$csrf'></form>";
 				print "	<div class='domain-edit-result'></div>";
 				print "</div>";
 			}
@@ -415,7 +438,7 @@ else {
 
 				print _('Do you wish to delete DNS zone and all records')."?<br>";
 				print "	&nbsp;&nbsp; DNS zone <strong>$domain->name</strong></li>";
-				print " <form name='domainEdit' id='domainEdit'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='$domain->id'></form>";
+				print " <form name='domainEdit' id='domainEdit'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='$domain->id'><input type='hidden' name='csrf_cookie' value='$csrf'></form>";
 				print "	<div class='domain-edit-result'></div>";
 				print "</div>";
 			}

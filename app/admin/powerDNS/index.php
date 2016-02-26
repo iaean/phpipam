@@ -24,12 +24,20 @@ $test = $PowerDNS->db_check();
 // save settings for powerDNS default
 $pdns = $PowerDNS->db_settings;
 
+// check if TTL is set
+if ($test!==false) {
+    $test_ttl = json_decode($User->settings->powerDNS);
+    if ($test_ttl->ttl==NULL) {
+        $Result->show("warning", "Please set <a href='".create_link("administration", "powerDNS", "defaults")."'>default powerDNS values</a>!", false);
+    }
+}
+
 ?>
 <!-- tabs -->
 <ul class="nav nav-tabs">
 	<?php
 	// tabs
-	$tabs = array("domains", "reverse_v4", "reverse_v6", "settings", "defaults");
+	$tabs = array("domains", "host_records", "reverse_v4", "reverse_v6", "settings", "defaults");
 
 	// default tab
 	if(!isset($_GET['subnetId'])) {
