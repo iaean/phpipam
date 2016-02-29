@@ -1,13 +1,16 @@
 SetEnvIf Origin (.*) AccessControlAllowOrigin=$1
-Header always set Access-Control-Allow-Credentials true
+SetEnvIf Access-Control-Request-Method (.*) AccessControlAllowMethods=$1
+SetEnvIf Access-Control-Request-Headers (.*) AccessControlAllowHeaders=$1
 Header always set Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
-Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE"
-Header always set Access-Control-Allow-Headers "Content-Type, Origin, Authorization, Accept, phpipam-token"
+Header always set Access-Control-Allow-Methods %{AccessControlAllowMethods}e env=AccessControlAllowMethods
+Header always set Access-Control-Allow-Headers %{AccessControlAllowHeaders}e env=AccessControlAllowHeaders
+Header always set Access-Control-Allow-Credentials true
+# Header always set Access-Control-Max-Age 86400
 
 RewriteEngine On
 # CORS preflight workaround
 RewriteCond %{REQUEST_METHOD} OPTIONS
-RewriteRule ^(.*)$ / [L,QSA]
+RewriteRule ^(.*)$ README [L]
 # exceptions
 RewriteRule ^(.*)/(.*)/cidr/(.*)/(.*)/$ ?app_id=$1&controller=$2&id=cidr&id2=$3&id3=$4 [L,QSA]
 RewriteRule ^(.*)/(.*)/cidr/(.*)/(.*) ?app_id=$1&controller=$2&id=cidr&id2=$3&id3=$4 [L,QSA]
